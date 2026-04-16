@@ -13,11 +13,47 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Pastikan body bisa scroll */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--light);
     color: var(--dark);
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Perbaikan Section agar tidak stuck */
+section {
+    padding: 20px 0 120px 0; /* Tambah padding bawah agar tidak tertutup nav */
+    flex: 1;
+    overflow-y: visible; /* Pastikan konten bisa memanjang ke bawah */
+}
+
+/* Container utama */
+.container {
+    padding: 0 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Supaya tampilan desktop tidak terlalu melebar/aneh */
+@media (min-width: 601px) {
+    body {
+        background-color: #e5e5e5; /* Warna background luar container */
+    }
+    .container {
+        background-color: var(--light);
+        min-height: 100vh;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    header, .bottom-nav {
+        max-width: 600px;
+        left: 50% !important;
+        transform: translateX(-50%);
+    }
 }
 
 h1, h2, h3 { font-family: 'Playfair Display', serif; }
