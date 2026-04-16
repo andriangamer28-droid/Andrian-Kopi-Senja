@@ -1,7 +1,6 @@
-// CONFIG - Masukkan API Key kamu di sini
-const apiKey = "ISI_API_KEY_KAMU_DISINI";
+const apiKey = ""; // Masukkan API Key kamu di sini
 
-async function callGemini(prompt, systemPrompt = "Kamu adalah Barista handal di Cafe Kenangan Senja.") {
+async function callGemini(prompt, systemPrompt = "Barista ramah di Cafe Kenangan Senja.") {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     try {
         const response = await fetch(url, {
@@ -14,7 +13,7 @@ async function callGemini(prompt, systemPrompt = "Kamu adalah Barista handal di 
         });
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
-    } catch (e) { return "Maaf, AI sedang istirahat."; }
+    } catch (e) { return "Maaf, barista AI sedang offline sebentar."; }
 }
 
 const menuData = [
@@ -30,30 +29,34 @@ function init() {
     renderMenu();
     updateCartUI();
     lucide.createIcons();
+    // Scroll ke atas setiap kali reload
+    document.getElementById('main-content').scrollTop = 0;
 }
 
 function showPage(pageId) {
-    document.querySelectorAll('section').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
     document.getElementById(`page-${pageId}`).classList.remove('hidden');
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     
-    // Update active icon
-    const activeNav = document.getElementById(`nav-${pageId}`);
-    if(activeNav) activeNav.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`nav-${pageId}`)?.classList.add('active');
+    
+    // Reset scroll ke atas saat pindah halaman
+    document.getElementById('main-content').scrollTop = 0;
 
     if (pageId === 'cart') renderCart();
+    if (pageId === 'checkout') loadTrivia();
 }
 
 function renderMenu() {
     const container = document.getElementById('menu-container');
-    container.innerHTML = menuData.map(item => `
+    container.innerHTML = menuData.map(m => `
         <div class="menu-card">
-            <img src="${item.img}" class="menu-img">
+            <img src="${m.img}" class="menu-img">
             <div class="menu-info">
-                <h4 style="margin:0">${item.nama}</h4>
-                <p style="color:var(--secondary); font-weight:bold">Rp ${item.harga.toLocaleString('id-ID')}</p>
+                <h3>${m.nama}</h3>
+                <p>Rp ${m.harga.toLocaleString('id-ID')}</p>
             </div>
-            <button class="btn" style="background:var(--primary); color:white; border-radius:50%; width:35px; height:35px; padding:0" onclick="addToCart(${item.id})">+</button>
+            <button class="btn" style="background:var(--primary); color:white; border-radius:50%; width:35px; height:35px; padding:0" onclick="addToCart(${m.id})">+</button>
         </div>
     `).join('');
 }
@@ -62,16 +65,16 @@ function addToCart(id) {
     const item = menuData.find(m => m.id === id);
     const exists = cart.find(c => c.id === id);
     if (exists) exists.qty++; else cart.push({...item, qty: 1});
-    saveCart();
+    saveAndRefresh();
 }
 
 function removeFromCart(id) {
-    cart = cart.filter(item => item.id !== id);
-    saveCart();
+    cart = cart.filter(c => c.id !== id);
+    saveAndRefresh();
     renderCart();
 }
 
-function saveCart() {
+function saveAndRefresh() {
     localStorage.setItem('cafe_cart', JSON.stringify(cart));
     updateCartUI();
 }
@@ -84,34 +87,32 @@ function updateCartUI() {
 function renderCart() {
     const container = document.getElementById('cart-items-container');
     const footer = document.getElementById('cart-footer');
-    const emptyMsg = document.getElementById('empty-cart-msg');
+    const empty = document.getElementById('empty-cart-msg');
 
     if (cart.length === 0) {
         container.innerHTML = "";
         footer.classList.add('hidden');
-        emptyMsg.classList.remove('hidden');
+        empty.classList.remove('hidden');
         return;
     }
 
-    emptyMsg.classList.add('hidden');
+    empty.classList.add('hidden');
     footer.classList.remove('hidden');
 
     let total = 0;
-    container.innerHTML = cart.map(item => {
-        const sub = item.harga * item.qty;
-        total += sub;
+    container.innerHTML = cart.map(c => {
+        total += (c.harga * c.qty);
         return `
-            <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; gap: 10px;">
-                <img src="${item.img}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
-                <div style="flex: 1;">
-                    <p style="font-weight: 600; margin:0">${item.nama}</p>
-                    <p style="font-size: 12px; color: #777;">${item.qty}x @ Rp ${item.harga.toLocaleString('id-ID')}</p>
+            <div style="display:flex; align-items:center; gap:15px; padding:15px 0; border-bottom:1px solid #eee">
+                <img src="${c.img}" style="width:50px; height:50px; border-radius:10px; object-fit:cover">
+                <div style="flex:1">
+                    <h4 style="font-size:14px">${c.nama}</h4>
+                    <p style="font-size:12px; color:#888">${c.qty}x @ Rp ${c.harga.toLocaleString('id-ID')}</p>
                 </div>
-                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:red; font-size:12px">Hapus</button>
+                <button onclick="removeFromCart(${c.id})" style="background:none; border:none; color:red; font-size:12px">Hapus</button>
             </div>
         `;
     }).join('');
-
     document.getElementById('total-amount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
 }
 
@@ -121,39 +122,37 @@ async function getAIRecommendation() {
     if (!input.value) return;
     
     resDiv.classList.remove('hidden');
-    resDiv.textContent = "Barista sedang meracik ide...";
-    
-    const res = await callGemini(`Rekomendasikan 1 menu dari [Kopi Susu Senja, Caramel Macchiato, Croissant, Matcha] untuk mood: ${input.value}. Berikan alasan singkat.`);
+    resDiv.textContent = "Barista AI sedang berpikir...";
+    const res = await callGemini(`Rekomendasikan 1 menu kopi/snack berdasarkan mood ini: ${input.value}`);
     resDiv.textContent = res;
+}
+
+async function loadTrivia() {
+    const text = document.getElementById('ai-trivia-text');
+    text.textContent = "Menyiapkan fakta unik seputar kopi...";
+    const res = await callGemini("Berikan 1 fakta singkat dan unik tentang kopi.");
+    text.textContent = res;
 }
 
 async function optimizeNote() {
     const note = document.getElementById('order-note');
-    if(!note.value) return;
-    note.placeholder = "Sedang mengoptimalkan...";
-    const res = await callGemini(`Rapikan catatan pesanan ini agar mudah dibaca barista: "${note.value}". Langsung tulis hasilnya saja.`);
+    if (!note.value) return;
+    const oldVal = note.value;
+    note.value = "Sedang merapikan...";
+    const res = await callGemini(`Tulis ulang catatan pesanan ini agar lebih sopan dan rapi: ${oldVal}`);
     note.value = res;
-}
-
-async function loadTrivia() {
-    const box = document.getElementById('ai-trivia-box');
-    const text = document.getElementById('ai-trivia-text');
-    box.classList.remove('hidden');
-    text.textContent = "Memuat fakta unik...";
-    const res = await callGemini("Berikan 1 fakta unik singkat tentang kopi.");
-    text.textContent = res;
 }
 
 function processOrder() {
     const name = document.getElementById('customer-name').value;
-    if (!name || cart.length === 0) return alert("Nama dan Pesanan tidak boleh kosong!");
+    if (!name || cart.length === 0) return alert("Lengkapi nama dan pesanan!");
     
-    let text = `Halo Kenangan Senja, saya *${name}* ingin memesan:\n\n`;
-    cart.forEach(i => text += `- ${i.nama} (${i.qty}x)\n`);
-    text += `\nTotal: *${document.getElementById('total-amount').textContent}*`;
+    let msg = `Halo Kopi Senja, saya *${name}* ingin pesan:\n\n`;
+    cart.forEach(c => msg += `- ${c.nama} (${c.qty}x)\n`);
+    msg += `\nTotal: *${document.getElementById('total-amount').textContent}*`;
     
-    window.location.href = `https://wa.me/628123456789?text=${encodeURIComponent(text)}`;
-    cart = []; saveCart();
+    window.location.href = `https://wa.me/628123456789?text=${encodeURIComponent(msg)}`;
+    cart = []; saveAndRefresh();
 }
 
 window.onload = init;
