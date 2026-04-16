@@ -1,106 +1,107 @@
 :root {
     --primary: #4a3728;
     --secondary: #a68966;
-    --accent: #d9c5b2;
-    --dark: #1a1a1a;
     --light: #fdfaf7;
+    --dark: #2d2d2d;
     --white: #ffffff;
-    --transition: all 0.3s ease;
 }
 
-* {
-    margin: 0; padding: 0; box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f0f0f0; /* Warna di luar container desktop */
-    color: var(--dark);
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
-/* Kunci lebar di tengah untuk Desktop */
-.app-container {
-    max-width: 500px;
-    margin: 0 auto;
     background-color: var(--light);
-    min-height: 100vh;
-    position: relative;
+    color: var(--dark);
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: hidden; /* Mencegah body scroll ganda */
 }
 
-.container { padding: 0 20px; width: 100%; }
-
-.hidden { display: none !important; }
+.container { padding: 0 20px; max-width: 600px; margin: 0 auto; width: 100%; }
 
 header {
     background: var(--white);
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
     z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-nav { display: flex; justify-content: space-between; align-items: center; }
-.logo { font-family: 'Playfair Display', serif; font-weight: bold; color: var(--primary); }
+.nav-header { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 
 main {
     flex: 1;
-    padding-bottom: 100px; /* Jarak agar tidak tertutup nav bawah */
+    overflow-y: auto; /* Mengizinkan scroll hanya di area konten */
+    padding-top: 20px;
+    padding-bottom: 100px; /* Jarak untuk bottom nav */
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Animasi Fade */
-.fade-in { animation: fadeIn 0.4s ease-in; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+section { display: block; }
+.hidden { display: none !important; }
 
-/* Hero & Cards */
+/* Home Components */
 .hero {
-    text-align: center; padding: 30px 15px; border-radius: 20px;
-    background: linear-gradient(rgba(253,250,247,0.8), rgba(253,250,247,0.8)), 
-                url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600');
-    background-size: cover; margin: 20px 0;
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600');
+    background-size: cover;
+    background-position: center;
+    padding: 60px 20px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+    margin-bottom: 25px;
 }
+.hero h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; }
 
 .ai-card {
-    background: #fff; border-radius: 16px; padding: 15px;
-    border-left: 4px solid var(--secondary); margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    background: white; padding: 20px; border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+    border-left: 5px solid var(--secondary);
 }
 
+.ai-box { margin-top: 15px; padding: 12px; background: #f9f9f9; border-radius: 10px; font-size: 13px; font-style: italic; }
+
+/* Menu */
+.menu-grid { display: grid; gap: 15px; margin-top: 10px; }
+.menu-card {
+    background: white; border-radius: 15px; padding: 12px;
+    display: flex; align-items: center; gap: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.menu-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; }
+.menu-info { flex: 1; }
+.menu-info h3 { font-size: 1rem; margin-bottom: 4px; }
+.menu-info p { color: var(--secondary); font-weight: bold; }
+
+/* Buttons */
 .btn {
-    padding: 12px 20px; border-radius: 10px; border: none;
-    font-weight: 600; cursor: pointer; transition: 0.2s;
+    border: none; padding: 12px 25px; border-radius: 12px;
+    font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .btn-primary { background: var(--primary); color: white; width: 100%; }
-
-/* Menu Grid */
-.menu-grid { display: grid; gap: 15px; padding: 10px 0; }
-.menu-card {
-    background: white; border-radius: 12px; overflow: hidden;
-    display: flex; align-items: center; padding: 10px;
-}
-.menu-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
-.menu-info { flex: 1; padding-left: 15px; }
+.btn-whatsapp { background: #25D366; color: white; width: 100%; margin-top: 15px; }
 
 /* Bottom Nav */
 .bottom-nav {
-    position: absolute; bottom: 0; width: 100%;
-    background: white; display: flex; justify-content: space-around;
-    padding: 10px 0; border-top: 1px solid #eee;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; height: 80px;
+    display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid #eee;
+    padding-bottom: env(safe-area-inset-bottom);
 }
-.nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #888; }
+.nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 0.7rem; }
+.nav-item i { margin-bottom: 4px; }
 .nav-item.active { color: var(--primary); }
 
-/* Cart Badge */
 .cart-icon-wrapper { position: relative; }
 .cart-count {
-    position: absolute; top: -5px; right: -8px;
-    background: red; color: white; font-size: 10px;
-    width: 16px; height: 16px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: -8px; right: -8px;
+    background: #e74c3c; color: white; width: 18px; height: 18px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;
 }
+
+.fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
