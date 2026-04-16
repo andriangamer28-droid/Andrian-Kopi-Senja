@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andrian Kopi Senja | Cafe Minimalis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Andrian Kenangan.</div>
+                <div class="cart-icon-wrapper" onclick="showPage('cart')">
+                    <i data-lucide="shopping-bag" size="24"></i>
+                    <span id="cart-badge" class="cart-count">0</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="page-home" class="fade-in">
+            <div class="hero">
+                <h1>Rasa dalam Setiap Tegukan</h1>
+                <p>Temukan ketenangan di tengah hiruk pikuk kota dengan racikan kopi pilihan kami.</p>
+                <button class="btn btn-primary" onclick="showPage('menu')">Lihat Menu</button>
+            </div>
+
+            <div class="ai-card">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i data-lucide="sparkles" style="color: var(--secondary);"></i>
+                    <h3 style="font-size: 1rem;">Tanya AI Barista ✨</h3>
+                </div>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px;">Bingung mau minum apa? Beritahu suasana hatimu!</p>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <input type="text" id="ai-mood-input" placeholder="Misal: Lagi ngantuk ingin yang manis..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                    <button class="btn sparkle-btn" id="ai-recommend-btn" onclick="getAIRecommendation()">Kirim</button>
+                </div>
+                <div id="ai-recommendation-result" class="ai-result hidden"></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h2 style="margin-bottom: 15px;">Kenapa Kami?</h2>
+                <div class="feature-item">☕ <strong>Biji Pilihan:</strong> 100% Arabika lokal.</div>
+                <div class="feature-item">🌿 <strong>Suasana Nyaman:</strong> Cocok untuk kerja atau santai.</div>
+            </div>
+        </section>
+
+        <section id="page-menu" class="hidden fade-in">
+            <h2 style="margin-bottom: 20px;">Menu Spesial</h2>
+            <div id="menu-container" class="menu-grid"></div>
+        </section>
+
+        <section id="page-cart" class="hidden fade-in">
+            <h2 style="margin-bottom: 20px;">Keranjang Saya</h2>
+            <div id="cart-items-container"></div>
+            <div id="empty-cart-msg" class="hidden" style="text-align: center; padding: 40px 0;">
+                <i data-lucide="shopping-cart" size="48" style="color: #ccc;"></i>
+                <p>Keranjangmu masih kosong.</p>
+            </div>
+            <div id="cart-footer">
+                <div class="cart-summary">
+                    <div class="summary-row"><span>Subtotal</span><span id="subtotal-amount">Rp 0</span></div>
+                    <div class="summary-row total"><span>Total</span><span id="total-amount">Rp 0</span></div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="showPage('checkout')">Lanjut ke Checkout</button>
+            </div>
+        </section>
+
+        <section id="page-checkout" class="hidden fade-in">
+            <h2 style="margin-bottom: 20px;">Konfirmasi Pesanan</h2>
+            <div id="ai-trivia-box" class="ai-card hidden" style="background: #f0f7ff;">
+                <p id="ai-trivia-text" style="font-size: 0.75rem;"></p>
+            </div>
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label>Nama Pemesan</label>
+                    <input type="text" id="customer-name" placeholder="Nama Anda">
+                </div>
+                <div class="form-group">
+                    <button onclick="optimizeNote()" id="optimize-btn" class="ai-tool-btn">
+                        <i data-lucide="wand-2" size="12"></i> Optimalkan ✨
+                    </button>
+                    <textarea id="order-note" rows="3" placeholder="Catatan tambahan..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; background: #25D366;" onclick="processOrder()">
+                    <i data-lucide="message-circle"></i> Pesan via WhatsApp
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="showPage('home')"><i data-lucide="home"></i><span>Home</span></div>
+        <div class="nav-item" id="nav-menu" onclick="showPage('menu')"><i data-lucide="coffee"></i><span>Menu</span></div>
+        <div class="nav-item" id="nav-cart" onclick="showPage('cart')"><i data-lucide="shopping-bag"></i><span>Cart</span></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
