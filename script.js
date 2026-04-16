@@ -43,7 +43,48 @@ function showPage(pageId) {
     if (pageId === 'cart') renderCart();
     if (pageId === 'checkout') loadTrivia();
 }
+function renderCart() {
+    const container = document.getElementById('cart-items-container');
+    const footer = document.getElementById('cart-footer');
+    const emptyMsg = document.getElementById('empty-cart-msg');
+    
+    // Debugging: Cek apakah cart ada isinya
+    console.log("Isi keranjang:", cart);
 
+    if (cart.length === 0) {
+        container.innerHTML = "";
+        footer.classList.add('hidden');
+        emptyMsg.classList.remove('hidden');
+        return;
+    }
+
+    emptyMsg.classList.add('hidden');
+    footer.classList.remove('hidden');
+
+    let total = 0;
+    container.innerHTML = cart.map(item => {
+        const sub = item.harga * item.qty;
+        total += sub;
+        return `
+            <div class="cart-item" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; gap: 15px;">
+                <img src="${item.img}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
+                <div style="flex: 1;">
+                    <h4 style="font-size: 0.9rem; margin: 0;">${item.nama}</h4>
+                    <p style="font-size: 0.8rem; color: var(--secondary); margin: 0;">${item.qty}x - Rp ${item.harga.toLocaleString('id-ID')}</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-weight: 600; font-size: 0.9rem; margin: 0;">Rp ${sub.toLocaleString('id-ID')}</p>
+                    <button onclick="removeFromCart(${item.id})" style="color: #e74c3c; border: none; background: none; cursor: pointer;">
+                        Hapus
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('subtotal-amount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    document.getElementById('total-amount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+                        }
 function renderMenu() {
     const container = document.getElementById('menu-container');
     container.innerHTML = menuData.map(item => `
